@@ -7,7 +7,7 @@ const bitcoin = new Blockchain();
 // bitcoin.createNewTransaction(130,'NEHAJFHSGJIJFH','MOSHDFGDJHKJFKH');
 // bitcoin.createNewTransaction(500,'NEHAJFHSGJIJFH','MOSHDFGDJHKJFKH');
 
-// bitcoin.createNewBlock(107,'asdfsdggd','sfsdgdsf');
+bitcoin.createNewBlock(107,'asdfsdggd','sfsdgdsf');
 const lastHash='FGDKHJKFNHFH';
 const currentBlockData=[
     {
@@ -26,3 +26,4 @@ const currentBlockData=[
 // console.log(bitcoin.createNewBlock(3,'ifiahfjnajfqioawh','fsikusdauikbeaf'));
 // console.log(bitcoin.proofOfWork(lastHash,currentBlockData));
 console.log(bitcoin);
+console.log(bitcoin.getLastBlock.index);
