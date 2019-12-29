@@ -27,14 +27,19 @@ Blockchain.prototype.getLastBlock=function()
     return this.chain[this.chain.length-1];
 }
 
-Blockchain.prototype.createNewTransaction=function(amount,sender,receipent)
+Blockchain.prototype.createNewTransaction=function(amount,sender,recepient)
 {
     const newTransaction={
     amount:amount,
     sender:sender,
-    receipent:receipent
+    receipent:recepient
     };
-    this.pendingTransactions.push(newTransaction);
+    return newTransaction;
+}
+
+Blockchain.prototype.addTransactionToPendingTransactions=function(transactionObj)
+{
+    this.pendingTransactions.push(transactionObj);
     return this.getLastBlock()['index']+1;
 }
 

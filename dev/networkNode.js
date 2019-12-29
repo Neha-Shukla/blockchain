@@ -8,7 +8,7 @@ const nodeAddress=uuid;
 const bitcoin=new Blockchain();
 const port=process.argv[2];
 
-app.use(bodyparser.json());
+app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: false}));
 
 // blockchain 
@@ -18,10 +18,32 @@ app.get('/blockchain', function (req, res) {
 
 // create new transaction
 app.post('/transaction', function (req, res) {
- const index=bitcoin.createNewTransaction(req.body.amount,req.body.sender,req.body.receipent);
+  const newTransaction=req.body;
+  const index=bitcoin.addTransactionToPendingTransactions(newTransaction);
  res.json({note:`this transaction will be added in block ${index}`});
 });
 
+// create and broadcast transaction
+app.post('/transaction/broadcast', function (req,res){
+  const newTransaction=bitcoin.createNewTransaction(req.body.amount,req.body.sender,req.body.recepient);
+  bitcoin.addTransactionToPendingTransactions(newTransaction);
+  const requestPromises=[];
+  bitcoin.networkNodes.forEach(networkNodeUrl=>
+    {
+      const requestoptions={
+        uri:networkNodeUrl+'/transaction',
+        method:'POST',
+        body:newTransaction,
+        json:true
+      };
+      requestPromises.push(rp(requestoptions));
+    });
+   Promise.all(requestPromises)
+   .then(data=>
+    {
+      res.json({note:'transaction added successfully'});
+    }) 
+})
 // mine a new block
 app.get('/mine', function (req, res) {
   const prevBlock=bitcoin.getLastBlock();
@@ -52,7 +74,8 @@ app.post('/register-and-broadcast',function(req,res){
 
    // traverse through each node url in network node 
    bitcoin.networkNodes.forEach(networkNodeUrl=>{
-
+     console.log(networkNodeUrl)
+   
      // register new node with each node by sending request to each node and register new node
      const requestoptions={
       uri:networkNodeUrl+'/register-node',
@@ -76,7 +99,12 @@ app.post('/register-and-broadcast',function(req,res){
 })
 .then(data=>{
   res.json({note: `new node registered to network successfully`});
-});
+})
+.catch(e=>{console.log(e)
+res.json({Error:e})
+
+})
+  
 });
 
 // register node on network
@@ -86,9 +114,10 @@ app.post('/register-node',function(req,res)
   const nodeNotAlreadyPresent=bitcoin.networkNodes.indexOf(newNodeUrl)==-1;
   const notCurrentNode=bitcoin.currentNodeUrl!==newNodeUrl;
   if(nodeNotAlreadyPresent && notCurrentNode){
-    bitcoin.networkNodes.push(newNodeUrl);
+    bitcoin.networkNodes.push(newNodeUrl)
   }
-  res.json({ note: 'new node registered successfully'});
+
+  res.json({ node: req.body.newNodeUrl});
 });
 
 // register nodes in bulk
