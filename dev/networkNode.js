@@ -44,26 +44,79 @@ app.post('/transaction/broadcast', function (req,res){
       res.json({note:'transaction added successfully'});
     }) 
 })
+app.post('/receive-new-block',function(req, res){ 
+  const newBlock=req.body.newBlock;
+  const lastBlock=bitcoin.getLastBlock();
+  const correctHash=lastBlock.hash===newBlock.previousBlockHash;
+  //console.log(lastBlock.hash+" "+JSON.stringify(newBlock));
+  const correctIndex=lastBlock['index']+1 === newBlock['index'];
+   if(correctHash && correctIndex){
+    //console.log(correctHash+" "+correctIndex);
+    bitcoin.chain.push(newBlock);
+    bitcoin.pendingTransactions=[];
+  
+    res.json({
+      note:'New block received and accepted',
+      newBlock:newBlock
+    });
+  }
+  else{
+    console.log("hello");
+    res.json({
+      note:'new block rejected',
+      newBlock:newBlock
+    });
+  }
+});
+
 // mine a new block
 app.get('/mine', function (req, res) {
   const prevBlock=bitcoin.getLastBlock();
-  const prevhash=prevBlock['hash'];
+  const prevhash=prevBlock.hash;
   const currentBlockData={
     transactions:bitcoin.pendingTransactions,
     index:prevBlock['index']+1
   };
   const nonce=bitcoin.proofOfWork(prevhash,currentBlockData);
   const currentHash=bitcoin.blockHash(prevhash,currentBlockData,nonce);
-  bitcoin.createNewTransaction(12.5,"00",nodeAddress);
+ 
   const newBlock=bitcoin.createNewBlock(nonce,prevhash,currentHash);
-  res.json({
-    note:"new block mined successfully",
-    block:newBlock
+  const requestPromises=[];
+  bitcoin.networkNodes.forEach(networkNodeUrl=>{
+    const requestOptions={
+      uri:networkNodeUrl+'/receive-new-block',
+      method:'POST',
+      body:{newBlock:newBlock},
+      json:true
+    };
+    //console.log(networkNodeUrl+" "+newBlock['index']);
+    requestPromises.push(rp(requestOptions));
+  });
+  Promise.all(requestPromises)
+  .then(data=>{
+    const requestOptions={
+      uri:bitcoin.currentNodeUrl+'/transaction/broadcast',
+      method:'POST',
+      body:{
+        amount:12.5,
+        sender:"00",
+        recepient:nodeAddress
+      },
+      json:true
+    };
+    return rp(requestOptions);
+  })
+  .then(data=>{
+    res.json({
+      note:"new block mined successfully",
+      block:newBlock
+    });
   });
 });
 
+
 // register and broadcast node on a network
-app.post('/register-and-broadcast',function(req,res){
+app.post('/register-and-broadcast-node',function(req,res){
    const newNodeUrl=req.body.newNodeUrl;
 
    //check if new node to be added is already present or not, if not then add to network nodes
