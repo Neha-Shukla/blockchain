@@ -1,29 +1,4 @@
 const Blockchain=require('./blockchain');
 const bitcoin = new Blockchain();
-// bitcoin.createNewBlock(100,'asdfsdggd','sfsdgdsf');
-// bitcoin.createNewTransaction(1000,'NEHAJFHSGJIJFH','MOSHDFGDJHKJFKH');
-// bitcoin.createNewBlock(101,'asdfsdggd','sfsdgdsf');
-// bitcoin.createNewTransaction(100,'NEHAJFHSGJIJFH','MOSHDFGDJHKJFKH');
-// bitcoin.createNewTransaction(130,'NEHAJFHSGJIJFH','MOSHDFGDJHKJFKH');
-// bitcoin.createNewTransaction(500,'NEHAJFHSGJIJFH','MOSHDFGDJHKJFKH');
-
-bitcoin.createNewBlock(107,"asdfsdggd","sfsdgdsf");
-const lastHash="FGDKHJKFNHFH";
-const currentBlockData=[
-    {
-        amount:100,
-        sender:'HKFHGIEUWDR',
-        receipent:'MUSHJGFHJSAGF'
-    },
-    {
-        amount:1023,
-        sender:'NEHAHKFHGIEUWDR',
-        receipent:'MUSUHJGFHJSAGF'
-    }
-];
-// console.log(bitcoin.blockHash(lastHash,currentBlockData,1));
-// console.log(bitcoin.blockHash(lastHash,currentBlockData,2));
-// console.log(bitcoin.createNewBlock(3,'ifiahfjnajfqioawh','fsikusdauikbeaf'));
-// console.log(bitcoin.proofOfWork(lastHash,currentBlockData));
-console.log(bitcoin);
-console.log(bitcoin.getLastBlock['index']);
+const bc1={"chain":[{"index":1,"timestamp":1578830747089,"transactions":[],"nonce":100,"hash":"0","previousBlockHash":"0"},{"index":2,"timestamp":1578830767722,"transactions":[],"nonce":18140,"hash":"0000b9135b054d1131392c9eb9d03b0111d4b516824a03c35639e12858912100","previousBlockHash":"0"},{"index":3,"timestamp":1578830809912,"transactions":[{"amount":12.5,"sender":"00"},{"amount":"1200","sender":"dfhagdfnkvna"},{"amount":"100","sender":"dfhagdfnkvna"},{"amount":"800","sender":"dfhagdfnkvna"},{"amount":"80","sender":"dfhagdfnkvna"},{"amount":"8","sender":"dfhagdfnkvna"}],"nonce":79894,"hash":"0000f621eb85424dc5d81f6a868960a6bb94b8f47c134493201ff426a5f83829","previousBlockHash":"0000b9135b054d1131392c9eb9d03b0111d4b516824a03c35639e12858912100"},{"index":4,"timestamp":1578830871216,"transactions":[{"amount":12.5,"sender":"00"}],"nonce":45942,"hash":"000046738168007439e3358e0bd9c0f522fc8124ea98d00c927556540c28990e","previousBlockHash":"0000f621eb85424dc5d81f6a868960a6bb94b8f47c134493201ff426a5f83829"},{"index":5,"timestamp":1578830873521,"transactions":[{"amount":12.5,"sender":"00"}],"nonce":22006,"hash":"000073ec2e0396c1059da6953c21b45a1de60343005d6319e59820aadd96bd1a","previousBlockHash":"000046738168007439e3358e0bd9c0f522fc8124ea98d00c927556540c28990e"}],"pendingTransactions":[{"amount":12.5,"sender":"00"}],"currentNodeUrl":"http://localhost:3001","networkNodes":[]};
+console.log("valid: "+bitcoin.chainIsValid(bc1.chain));
